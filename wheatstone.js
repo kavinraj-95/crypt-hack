@@ -51,7 +51,7 @@ function generate_matrix(key, msg) {
 }
 
 //function to generate digraphs from message
-function get_diagraphs(text){
+function get_digraphs(text){
     let digraphs = [];
     let i = 0;
     while(i < text.length) {
