@@ -94,7 +94,7 @@ function search(matrix, digraph){
 //function to find the position of a 
 function encrypt(key, message) {
     let key_mat = generate_matrix(key, message);
-    let digraphs = get_diagraphs(message);
+    let digraphs = get_digraphs(message);
     let encrypted_text = "";
     for(let i = 0; i < digraphs.length; i++){
         let pos = search(key_mat, digraphs[i]);
@@ -116,3 +116,5 @@ function encrypt(key, message) {
         }
     }return encrypted_text;
 }
+
+console.log(encrypt("monarchy", "instruments"))
