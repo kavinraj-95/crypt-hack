@@ -99,13 +99,18 @@ function encrypt(key, message) {
     for(let i = 0; i < digraphs.length; i++){
         let pos = search(key_mat, digraphs[i]);
         let p1 = pos[0], p2 = pos[1];
+        //if both are in same column take the below element (% 5 makes sure you come back to top when there is no element below it)
         if(p1[0] == p2[0]){
             encrypted_text += key_mat[p1[0]][(p1[1] + 1) % 5];
             encrypted_text += key_mat[p2[0]][(p2[1] + 1) % 5];
-        }else if(p1[1] == p2[1]) {
+        }
+        // if both are in same row take the right element
+        else if(p1[1] == p2[1]) {
             encrypted_text += key_mat[(p1[0] + 1) % 5][p1[1]];
             encrypted_text += key_mat[(p2[0] + 1) % 5][p2[1]];
-        }else{
+        }
+        // else just make a rectangle and take the elements from the opposite diagonal
+        else{
             encrypted_text += key_mat[p1[0]][p2[1]];
             encrypted_text += key_mat[p2[0]][p1[1]];
         }
