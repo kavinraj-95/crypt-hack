@@ -42,7 +42,7 @@ function generate_matrix(key) {
     return matrix;
 }
 
-function get_diagrams(text){
+function get_diagraphs(text){
     let digraphs = [];
     let i = 0;
     while(i < text.length) {
@@ -64,4 +64,9 @@ function get_diagrams(text){
         i += 2;
     }
     return digraphs;
+}
+
+function encrypt(key, message) {
+    let key_mat = generate_matrix(key);
+    let digraphs = get_diagrams
 }
