@@ -1,8 +1,16 @@
 //Implementing Wheatstone-PlayFair Cipher
 
+function unique(text) {
+    //convert the text as set to remove repeating letters and convert it into an array of chracters and use join and make it as a string
+    let unique_string = Array.from(new Set(text.toLowerCase())).join('');
+    return unique_string
+    
+}
 //function to generate key matrix
 function generate_matrix(key, msg) {
-    key = key.toLowerCase();
+    //remove repeating characters from key and message
+    key = unique(key);
+    msg = unique(msg);
     let row = 0, col = 0;
     //initiate matrix 
     let matrix = [];
@@ -24,7 +32,7 @@ function generate_matrix(key, msg) {
     //add other alphabets into matrix
     let last_row = 0, last_col = 0;             //to track the last letter which is not in msg
     for(let i = 97; i <= 122; i++) {
-        if(!key.includes(String.fromCharCode(i)) && i != 106){            //if j is in the key, since we cant hold more than 25 letters we will remove the last one
+        if(!key.includes(String.fromCharCode(i))){            //if j is in the key, since we cant hold more than 25 letters we will remove the last one
             if(row == 5) {
                 if(msg.includes(String.fromCharCode(i))){
                     matrix[last_row][last_col] = String.fromCharCode(i);
@@ -52,13 +60,14 @@ function generate_matrix(key, msg) {
 
 //function to generate digraphs from message
 function get_digraphs(text){
+    text = text.toLowerCase()
     let digraphs = [];
     let i = 0;
     while(i < text.length) {
         let digraph = text[i];
         //if the last letter stands alone add a bogus letter 'z'
         if (i + 1 == text.length) {
-            digraph += 'z';
+            digraph += 'x';
         } //if both the letters in the digram are same then add a bogus letter 'z'
         else if (text[i] == text[i + 1]) {
             digraph += 'x';
@@ -96,25 +105,50 @@ function encrypt(key, message) {
     let key_mat = generate_matrix(key, message);
     let digraphs = get_digraphs(message);
     let encrypted_text = "";
-    for(let i = 0; i < digraphs.length; i++){
+    for (let i = 0; i < digraphs.length; i++) {
         let pos = search(key_mat, digraphs[i]);
         let p1 = pos[0], p2 = pos[1];
-        //if both are in same column take the below element (% 5 makes sure you come back to top when there is no element below it)
-        if(p1[0] == p2[0]){
+        //if both are in same column take the below element (% n makes sure you come back to top when there is no element below it)
+        if (p1[0] === p2[0]) {
             encrypted_text += key_mat[p1[0]][(p1[1] + 1) % 5];
             encrypted_text += key_mat[p2[0]][(p2[1] + 1) % 5];
         }
         // if both are in same row take the right element
-        else if(p1[1] == p2[1]) {
+        else if (p1[1] === p2[1]) {
             encrypted_text += key_mat[(p1[0] + 1) % 5][p1[1]];
             encrypted_text += key_mat[(p2[0] + 1) % 5][p2[1]];
         }
         // else just make a rectangle and take the elements from the opposite diagonal
-        else{
+        else {
             encrypted_text += key_mat[p1[0]][p2[1]];
             encrypted_text += key_mat[p2[0]][p1[1]];
         }
-    }return encrypted_text;
+    }
+    return encrypted_text;
 }
 
-console.log(encrypt("monarchy", "instruments"))
+//function to decrypt the message using key
+function decrypt_using_key(key, encrypted_text){
+    let key_mat = generate_matrix(key, encrypted_text);
+    let digraphs = get_digraphs(encrypted_text);
+    let decrypted_text = "";
+    for(let i = 0; i < digraphs.length; i++){
+        let pos = search(key_mat, digraphs[i]);
+        let p1 = pos[0], p2 = pos[1];
+        //if both are in same column take the below element ((ele - 1 - n) % n makes sure you come back to bottom when there is no element above it)
+        if(p1[0] == p2[0]){
+            decrypted_text += key_mat[p1[0]][(p1[1] - 1 + 5) % 5];
+            decrypted_text += key_mat[p2[0]][(p2[1] - 1 + 5) % 5];
+        }
+        // if both are in same row take the left element
+        else if(p1[1] == p2[1]) {
+            decrypted_text += key_mat[(p1[0] - 1 + 5) % 5][p1[1]];
+            decrypted_text += key_mat[(p2[0] - 1 + 5) % 5][p2[1]];
+        }
+        // else just make a rectangle and take the elements from the opposite diagonal
+        else{
+            decrypted_text += key_mat[p1[0]][p2[1]];
+            decrypted_text += key_mat[p2[0]][p1[1]];
+        }
+    }return decrypted_text
+}
